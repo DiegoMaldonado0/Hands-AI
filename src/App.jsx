@@ -13,11 +13,11 @@ const App = () => {
     <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
       <Header />
       <Routes>
-        <Route path="/nodejs-proyecto-libre" element={<Hero />} />
-        <Route path="/nodejs-proyecto-libre/login" element={<Login />} />
-        <Route path="/nodejs-proyecto-libre/signup" element={<SignUp />} />
-        <Route path="/nodejs-proyecto-libre/test" element={<Test />} />
-        <Route path="/nodejs-proyecto-libre/word-builder" element={<WordBuilder />} />
+        <Route path="/Hands-AI" element={<Hero />} />
+        <Route path="/Hands-AI/login" element={<Login />} />
+        <Route path="/Hands-AI/signup" element={<SignUp />} />
+        <Route path="/Hands-AI/test" element={<Test />} />
+        <Route path="/Hands-AI/word-builder" element={<WordBuilder />} />
       </Routes>
       <Footer />
     </div>

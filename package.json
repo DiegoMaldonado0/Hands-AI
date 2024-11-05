@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "vite-plugin-gh-pages"
   },
   "dependencies": {
     "firebase": "^11.0.1",
@@ -33,6 +33,7 @@
     "globals": "^15.9.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.12",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vite-plugin-gh-pages": "^1.0.0"
   }
 }

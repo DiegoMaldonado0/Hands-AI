@@ -10,17 +10,17 @@ export const navigation = [
   {
     id: "0",
     title: "Learning",
-    url: "/nodejs-proyecto-libre",
+    url: "/Hands-AI",
   },
   {
     id: "1",
     title: "Simon Says!",
-    url: "/nodejs-proyecto-libre/test",
+    url: "/Hands-AI/test",
   },
   {
     id: "2",
     title: "Word Builder",
-    url: "/nodejs-proyecto-libre/word-builder",
+    url: "/Hands-AI/word-builder",
   },
   {
     id: "4",

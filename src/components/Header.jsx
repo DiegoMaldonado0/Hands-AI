@@ -77,7 +77,7 @@ const Header = () => {
         }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
-        <Link className="block w-[12rem] xl:mr-8" to="/nodejs-proyecto-libre">
+        <Link className="block w-[12rem] xl:mr-8" to="/Hands-AI">
           <h1 className="text-2xl text-n-1">HANDS AI</h1>
         </Link>
 
@@ -133,13 +133,13 @@ const Header = () => {
         ) : (
           <>
             <Link
-              to="/nodejs-proyecto-libre/signup"
+              to="/Hands-AI/signup"
               className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
             >
               New Account
             </Link>
             <Link
-              to="/nodejs-proyecto-libre/login"
+              to="/Hands-AI/login"
               className="button hidden lg:flex"
             >
               Sign in
