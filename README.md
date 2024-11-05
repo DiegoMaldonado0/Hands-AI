@@ -23,11 +23,11 @@ npm run dev
 
 Ahora así es como se ve el proyecto ya terminado:
 
-![image](https://github.com/user-attachments/assets/195ae3c5-59f3-408e-9c4d-d11b18c849b1)
+![image](https://github.com/user-attachments/assets/5da2e52d-709e-422e-82b8-d90879f9df27)
 
-![image](https://github.com/user-attachments/assets/4526a60a-2b96-4ec6-a3db-3f8f62871a5f)
+![image](https://github.com/user-attachments/assets/d2d31bdd-6b3d-4788-958f-ec5dc88b8155)
 
-![image](https://github.com/user-attachments/assets/86e18a2c-8497-4a2f-993b-87d8902e408d)
+![image](https://github.com/user-attachments/assets/c3fa4cce-d3ed-4522-82d6-e1098304b245)
 
 ![image](https://github.com/user-attachments/assets/19940bf7-00f4-48b6-ab4d-40f20dbd2b67)
 
