@@ -1,4 +1,4 @@
-# ProyectoIA-V2
+# MODEL - BRANCH
 Traductor y lector con voz de lenguaje de señas en tiempo real utilizando visión artificial y Machine Learning para el reconocimiento de cada seña
 
 ![image](https://github.com/user-attachments/assets/4808fbed-0c11-416a-8a04-8003adb28c30)
