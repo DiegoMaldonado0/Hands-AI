@@ -22,18 +22,6 @@ export const navigation = [
     title: "Word Builder",
     url: "/Hands-AI/word-builder",
   },
-  {
-    id: "4",
-    title: "New account",
-    url: "#signup",
-    onlyMobile: true,
-  },
-  {
-    id: "5",
-    title: "Sign in",
-    url: "#login",
-    onlyMobile: true,
-  },
 ];
 
 export const socials = [
