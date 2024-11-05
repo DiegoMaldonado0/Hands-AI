@@ -29,9 +29,9 @@ Ahora así es como se ve el proyecto ya terminado:
 
 ![image](https://github.com/user-attachments/assets/86e18a2c-8497-4a2f-993b-87d8902e408d)
 
-![image](https://github.com/user-attachments/assets/77206911-cfe1-4e35-a98e-11e1de2643d7)
+![image](https://github.com/user-attachments/assets/19940bf7-00f4-48b6-ab4d-40f20dbd2b67)
 
-![image](https://github.com/user-attachments/assets/0c04664f-5cdf-4cb7-bff5-bda178cfcdf7)
+![image](https://github.com/user-attachments/assets/46448975-de8a-4f0c-bbb3-a274ed92e869)
 
 Para el tema de los usuarios decidimos concetar nuestro programa con FireBase y manejar la Authentication.
 
