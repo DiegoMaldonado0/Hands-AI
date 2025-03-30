@@ -1,4 +1,4 @@
-import { curve, heroBackground, sampleImage } from "../assets"; // Import your additional image
+import { curve, heroBackground, sampleImage } from "../assets"; 
 import Section from "./Section";
 import { BackgroundCircles, BottomLine, Gradient } from "./design/Hero";
 import { useRef, useState, useEffect } from "react";
@@ -88,33 +88,44 @@ const Hero = () => {
         </div>
 
         {/* New Flex Container for Video and Image */}
-        <div className="relative flex items-center justify-center gap-8 md:max-w-5xl xl:mb-24 mx-auto">
+        <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:max-w-5xl mx-auto">
           {/* Left Column: Camera Feed */}
-          <div className="w-1/2 flex flex-col items-center mx-auto">
+          <div className="w-full md:w-2/3 flex flex-col items-center mx-auto">
             <video
               id="video"
-              className="w-full h-full rounded-md border border-gray-300"
+              className="w-full h-full rounded-md border border-gray-300 shadow-lg"
               autoPlay
               playsInline
               muted
             />
             <button
               onClick={toggleRecognition}
-              className="mt-2 w-full px-4 py-2 text-white bg-blue-500 rounded-md relative z-10"
+              className={`mt-2 w-full px-4 py-2 text-black rounded-md relative z-10 transition 
+                ${isRecognizing ? "bg-red-500 hover:bg-red-600" : "bg-white hover:bg-[#100c14] hover:text-white"}`}
             >
               {isRecognizing ? "Stop recognition" : "Start recognition"}
             </button>
-            <p id="output" className="mt-2 text-center text-gray-700">
-              {recognizedText}
-            </p>
+            <div className="mt-2 flex items-center justify-center gap-2">
+              {isRecognizing && (
+                <div className="loader border-t-4 border-blue-500 rounded-full w-6 h-6 animate-spin"></div>
+              )}
+              <p
+                id="output"
+                className={`mt-2 text-center ${
+                  isRecognizing ? "text-white" : "text-gray-700"
+                }`}
+              >
+                {recognizedText}
+              </p>
+            </div>
           </div>
 
           {/* Right Column: Image */}
-          <div className="w-1/2 mx-auto">
+          <div className="w-full md:w-1/3 mx-auto flex justify-center items-center relative md:-top-8">
             <img
               src={sampleImage}
               alt="Sample"
-              className="w-full h-full rounded-md shadow-lg"
+              className="w-4/5 h-auto md:w-full rounded-md shadow-lg transition-transform hover:scale-105"
             />
           </div>
         </div>
