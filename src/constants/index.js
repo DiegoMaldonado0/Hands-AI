@@ -22,6 +22,16 @@ export const navigation = [
     title: "Word Builder",
     url: "/Hands-AI/word-builder",
   },
+  {
+    id: "3",
+    title: "Profile",
+    url: "/Hands-AI/profile",
+  },
+  {
+    id: "4",
+    title: "Badges",
+    url: "/Hands-AI/badges",
+  },
 ];
 
 export const socials = [
