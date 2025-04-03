@@ -1,29 +1,95 @@
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  // Estadísticas del usuario (podrían venir de una base de datos)
   const [stats, setStats] = useState({
-    lessonsCompleted: 0,
+   // lessonsCompleted: 0,
     badges: 0,
     daysStreak: 0,
-    totalPoints: 0
+   // totalPoints: 0,
+    lettersLearned: []
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const db = getFirestore();
+
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        // Aquí podrías cargar los datos del usuario desde Firebase
-        // Por ejemplo: fetchUserData(currentUser.uid);
+        
+        try {
+          // Obtener datos del usuario desde Firestore
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            
+            // Actualizar el último login y verificar racha
+            const lastLogin = userData.stats?.lastLogin?.toDate() || new Date();
+            const today = new Date();
+            const lastLoginDate = new Date(lastLogin);
+            
+            // Verificar si es un nuevo día (comparando solo la fecha, no la hora)
+            const isNewDay = 
+              lastLoginDate.getDate() !== today.getDate() || 
+              lastLoginDate.getMonth() !== today.getMonth() || 
+              lastLoginDate.getFullYear() !== today.getFullYear();
+            
+            // Verificar si es el día siguiente para mantener la racha
+            let isNextDay = false; // Cambiado de const a let
+            if (isNewDay) {
+              const timeDiff = today.getTime() - lastLoginDate.getTime();
+              const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+              if (dayDiff === 1) {
+                isNextDay = true;
+              }
+            }
+            
+            // Actualizar estadísticas
+            let currentStreak = userData.stats?.daysStreak || 0;
+            if (isNewDay) {
+              if (isNextDay) {
+                // Incrementar racha si es el día siguiente
+                currentStreak += 1;
+              } else if (dayDiff > 1) {
+                // Reiniciar racha si se saltó un día
+                currentStreak = 1;
+              }
+              
+              // Actualizar último login
+              await updateDoc(doc(db, "users", currentUser.uid), {
+                "stats.lastLogin": today,
+                "stats.daysStreak": currentStreak
+              });
+            }
+            
+            // Contar insignias obtenidas
+            // Cuando procesas las insignias en UserProfile.jsx
+            const earnedBadges = userData.userBadges?.filter(badge => 
+              badge.earnedAt !== null && 
+              badge.earnedAt !== undefined && 
+              badge.earnedAt !== ""
+            ) || [];
+            
+            // Actualizar estado con datos del usuario
+            setStats({
+              lessonsCompleted: userData.stats?.wordsCompleted || 0,
+              badges: earnedBadges.length,
+              daysStreak: currentStreak,
+              totalPoints: (userData.stats?.lettersLearned?.length || 0) * 10 + earnedBadges.length * 50,
+              lettersLearned: userData.stats?.lettersLearned || []
+            });
+          }
+        } catch (error) {
+          console.error("Error al obtener datos del usuario:", error);
+        }
       } else {
-        // Redirigir al login si no hay usuario
         navigate("/Hands-AI/login");
       }
       setLoading(false);
@@ -41,7 +107,7 @@ const UserProfile = () => {
   }
 
   if (!user) {
-    return null; // El useEffect redirigirá al login
+    return null;
   }
 
   return (
@@ -66,7 +132,7 @@ const UserProfile = () => {
             <h2 className="text-2xl font-semibold text-white mb-6">Estadísticas</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-gray-700 p-4 rounded-lg">
-                <p className="text-gray-400 text-sm">Lecciones completadas</p>
+                <p className="text-gray-400 text-sm">Palabras completadas</p>
                 <p className="text-3xl font-bold text-white">{stats.lessonsCompleted}</p>
               </div>
               <div className="bg-gray-700 p-4 rounded-lg">
@@ -95,11 +161,16 @@ const UserProfile = () => {
                     <p className="text-gray-400 text-sm">Alfabeto en lenguaje de señas</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-indigo-400 font-medium">60%</p>
+                    <p className="text-indigo-400 font-medium">
+                      {Math.min(Math.round((stats.lettersLearned.length / 26) * 100), 100)}%
+                    </p>
                   </div>
                 </div>
                 <div className="mt-2 w-full bg-gray-600 rounded-full h-2.5">
-                  <div className="bg-indigo-500 h-2.5 rounded-full" style={{ width: "60%" }}></div>
+                  <div 
+                    className="bg-indigo-500 h-2.5 rounded-full" 
+                    style={{ width: `${Math.min(Math.round((stats.lettersLearned.length / 26) * 100), 100)}%` }}
+                  ></div>
                 </div>
               </div>
               
@@ -110,11 +181,16 @@ const UserProfile = () => {
                     <p className="text-gray-400 text-sm">Vocabulario básico</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-indigo-400 font-medium">25%</p>
+                    <p className="text-indigo-400 font-medium">
+                      {Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%
+                    </p>
                   </div>
                 </div>
                 <div className="mt-2 w-full bg-gray-600 rounded-full h-2.5">
-                  <div className="bg-indigo-500 h-2.5 rounded-full" style={{ width: "25%" }}></div>
+                  <div 
+                    className="bg-indigo-500 h-2.5 rounded-full" 
+                    style={{ width: `${Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%` }}
+                  ></div>
                 </div>
               </div>
             </div>
