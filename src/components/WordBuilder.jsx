@@ -41,7 +41,7 @@ const WordBuilder = () => {
     formData.append("file", blob, "frame.jpg");
 
     try {
-      const response = await fetch("https://proyecto-manos-g6i1.onrender.com/recognize-sign", {
+      const response = await fetch("https://proyecto-manos-1.onrender.com/recognize-sign", {
         method: "POST",
         body: formData,
       });
