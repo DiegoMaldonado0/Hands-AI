@@ -1,7 +1,17 @@
 import { useState } from "react";
+<<<<<<< HEAD
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { auth , db } from "../firebaseconfig";
+=======
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebaseconfig";
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
@@ -15,7 +25,15 @@ const SignUp = () => {
     e.preventDefault();
     try {
       // Usar directamente la instancia de auth importada en lugar de crear una nueva
+<<<<<<< HEAD
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+=======
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       const user = userCredential.user;
 
       // Actualizar el perfil del usuario con el nombre
@@ -25,11 +43,19 @@ const SignUp = () => {
 
       // Usar la instancia db importada en lugar de crear una nueva
       const currentDate = new Date();
+<<<<<<< HEAD
       
       // Crear el documento con manejo de errores específico
       try {
         console.log("Intentando crear documento para usuario:", user.uid);
         
+=======
+
+      // Crear el documento con manejo de errores específico
+      try {
+        console.log("Intentando crear documento para usuario:", user.uid);
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
         // Crear un objeto de datos simple primero
         const userData = {
           createdAt: currentDate.toISOString(),
@@ -39,22 +65,41 @@ const SignUp = () => {
             daysStreak: 0,
             lastLogin: currentDate.toISOString(),
             wordsCompleted: 0,
+<<<<<<< HEAD
             lettersLearned: []
+=======
+            lettersLearned: [],
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
           },
           userBadges: [
             {
               badgeId: "01",
               earnedAt: currentDate.toISOString(), // Aseguramos formato ISO consistente
+<<<<<<< HEAD
               progress: 1
             }
           ]
         };
         
+=======
+              progress: 1,
+            },
+          ],
+        };
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
         // Intentar crear el documento
         await setDoc(doc(db, "users", user.uid), userData);
         console.log("Documento de usuario creado exitosamente");
       } catch (firestoreError) {
+<<<<<<< HEAD
         console.error("Error específico al crear documento en Firestore:", firestoreError);
+=======
+        console.error(
+          "Error específico al crear documento en Firestore:",
+          firestoreError
+        );
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
         // Mostrar detalles del error
         setMessage("Error al crear perfil: " + firestoreError.message);
         return; // Detener la ejecución si falla la creación del documento
@@ -62,7 +107,11 @@ const SignUp = () => {
 
       console.log("Registro exitoso:", user);
       setMessage("Registro exitoso. Bienvenido, " + name + "!");
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       // Redirigir al usuario después de un registro exitoso
       setTimeout(() => {
         navigate("/Hands-AI/profile");
@@ -84,7 +133,14 @@ const SignUp = () => {
         <form onSubmit={handleSignUp}>
           {/* Resto del formulario sin cambios */}
           <div className="mb-4">
+<<<<<<< HEAD
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="name">
+=======
+            <label
+              className="block text-gray-300 text-sm font-bold mb-2"
+              htmlFor="name"
+            >
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               Name
             </label>
             <input
@@ -98,7 +154,14 @@ const SignUp = () => {
           </div>
 
           <div className="mb-4">
+<<<<<<< HEAD
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="email">
+=======
+            <label
+              className="block text-gray-300 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               Email
             </label>
             <input
@@ -112,7 +175,14 @@ const SignUp = () => {
           </div>
 
           <div className="mb-6">
+<<<<<<< HEAD
             <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="password">
+=======
+            <label
+              className="block text-gray-300 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               Password
             </label>
             <input

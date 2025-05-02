@@ -12,7 +12,11 @@ const Badges = () => {
   useEffect(() => {
     const auth = getAuth();
     const db = getFirestore();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
     // Definir las insignias disponibles en el sistema
     const systemBadges = [
       {
@@ -21,7 +25,11 @@ const Badges = () => {
         description: "Crea una cuenta y empieza tu aventura!",
         icon: "👋",
         requirement: "REGISTRATION",
+<<<<<<< HEAD
         requiredValue: 1
+=======
+        requiredValue: 1,
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       },
       {
         id: "02",
@@ -29,7 +37,11 @@ const Badges = () => {
         description: "Has mantenido una racha de 3 días consecutivos",
         icon: "🔥",
         requirement: "DAYS_STREAK",
+<<<<<<< HEAD
         requiredValue: 3
+=======
+        requiredValue: 3,
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       },
       {
         id: "03",
@@ -37,7 +49,11 @@ const Badges = () => {
         description: "Has completado todas las letras del abecedario",
         icon: "🏆",
         requirement: "ALPHABET_MASTERY",
+<<<<<<< HEAD
         requiredValue: 26
+=======
+        requiredValue: 26,
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       },
       {
         id: "04",
@@ -45,7 +61,11 @@ const Badges = () => {
         description: "Aprendiste 10 palabras diferentes",
         icon: "💬",
         requirement: "WORDS_COMPLETED",
+<<<<<<< HEAD
         requiredValue: 10
+=======
+        requiredValue: 10,
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
       },
       {
         id: "05",
@@ -53,13 +73,19 @@ const Badges = () => {
         description: "Completaste todos los niveles básicos",
         icon: "⭐",
         requirement: "EXPERT",
+<<<<<<< HEAD
         requiredValue: 1
       }
+=======
+        requiredValue: 1,
+      },
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
     ];
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+<<<<<<< HEAD
         
         try {
           // Obtener datos del usuario desde Firestore
@@ -83,20 +109,60 @@ const Badges = () => {
               let earnedDate = null;
               let isEarned = false;
               
+=======
+
+        try {
+          // Obtener datos del usuario desde Firestore
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log("Datos del usuario:", userData);
+
+            // Obtener las insignias del usuario (con validación)
+            const userBadges = Array.isArray(userData.userBadges)
+              ? userData.userBadges
+              : [];
+            console.log("Insignias del usuario:", userBadges);
+
+            // Combinar las insignias del sistema con el estado del usuario
+            const combinedBadges = systemBadges.map((badge) => {
+              // Buscar la insignia correspondiente en las insignias del usuario
+              const userBadge = userBadges.find(
+                (ub) => ub.badgeId === badge.id
+              );
+              console.log(`Procesando insignia ${badge.id}:`, userBadge);
+
+              let progress = 0;
+              let earnedDate = null;
+              let isEarned = false;
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               // Verificar si la insignia está ganada
               if (userBadge && userBadge.earnedAt) {
                 try {
                   // Intentar convertir la fecha a un objeto Date
+<<<<<<< HEAD
                   if (typeof userBadge.earnedAt === 'object' && userBadge.earnedAt.toDate) {
                     // Es un timestamp de Firestore
                     earnedDate = userBadge.earnedAt.toDate();
                   } else if (typeof userBadge.earnedAt === 'string') {
+=======
+                  if (
+                    typeof userBadge.earnedAt === "object" &&
+                    userBadge.earnedAt.toDate
+                  ) {
+                    // Es un timestamp de Firestore
+                    earnedDate = userBadge.earnedAt.toDate();
+                  } else if (typeof userBadge.earnedAt === "string") {
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
                     // Es una cadena ISO
                     earnedDate = new Date(userBadge.earnedAt);
                   } else if (userBadge.earnedAt instanceof Date) {
                     // Ya es un objeto Date
                     earnedDate = userBadge.earnedAt;
                   }
+<<<<<<< HEAD
                   
                   // Verificar si la fecha es válida
                   isEarned = earnedDate && !isNaN(earnedDate.getTime());
@@ -106,6 +172,20 @@ const Badges = () => {
                 }
               }
               
+=======
+
+                  // Verificar si la fecha es válida
+                  isEarned = earnedDate && !isNaN(earnedDate.getTime());
+                } catch (error) {
+                  console.error(
+                    `Error al procesar fecha de insignia ${badge.id}:`,
+                    error
+                  );
+                  isEarned = false;
+                }
+              }
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               // Calcular progreso según el tipo de insignia si no está ganada
               if (!isEarned) {
                 switch (badge.requirement) {
@@ -127,16 +207,30 @@ const Badges = () => {
                 // Si está ganada, el progreso es el valor requerido
                 progress = badge.requiredValue;
               }
+<<<<<<< HEAD
               
+=======
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
               return {
                 ...badge,
                 earned: isEarned,
                 date: earnedDate,
                 progress: userBadge?.progress || progress,
+<<<<<<< HEAD
                 progressPercent: Math.min(Math.round((progress / badge.requiredValue) * 100), 100)
               };
             });
             
+=======
+                progressPercent: Math.min(
+                  Math.round((progress / badge.requiredValue) * 100),
+                  100
+                ),
+              };
+            });
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
             setBadges(combinedBadges);
           }
         } catch (error) {
@@ -168,28 +262,52 @@ const Badges = () => {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-white mb-2">Mis Insignias</h1>
+<<<<<<< HEAD
           <p className="text-gray-400">Colecciona insignias completando diferentes desafíos</p>
+=======
+          <p className="text-gray-400">
+            Colecciona insignias completando diferentes desafíos
+          </p>
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
         </div>
 
         <div className="bg-gray-800 rounded-lg shadow-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {badges.map((badge) => (
+<<<<<<< HEAD
               <div 
                 key={badge.id} 
                 className={`p-6 rounded-lg border ${
                   badge.earned 
                     ? "bg-gray-700 border-indigo-500" 
+=======
+              <div
+                key={badge.id}
+                className={`p-6 rounded-lg border ${
+                  badge.earned
+                    ? "bg-gray-700 border-indigo-500"
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
                     : "bg-gray-800 border-gray-700 opacity-60"
                 }`}
               >
                 <div className="flex items-center mb-4">
                   <div className="text-4xl mr-4">{badge.icon}</div>
                   <div>
+<<<<<<< HEAD
                     <h3 className="text-xl font-semibold text-white">{badge.name}</h3>
                     <p className="text-gray-400 text-sm">{badge.description}</p>
                   </div>
                 </div>
                 
+=======
+                    <h3 className="text-xl font-semibold text-white">
+                      {badge.name}
+                    </h3>
+                    <p className="text-gray-400 text-sm">{badge.description}</p>
+                  </div>
+                </div>
+
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
                 {badge.earned && badge.date ? (
                   <div className="mt-4 text-sm text-indigo-400">
                     Obtenida el {badge.date.toLocaleDateString()}
@@ -198,11 +316,21 @@ const Badges = () => {
                   <div className="mt-4">
                     <div className="flex justify-between text-sm text-gray-500 mb-1">
                       <span>Progreso</span>
+<<<<<<< HEAD
                       <span>{badge.progress}/{badge.requiredValue}</span>
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2">
                       <div 
                         className="bg-indigo-600 h-2 rounded-full" 
+=======
+                      <span>
+                        {badge.progress}/{badge.requiredValue}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div
+                        className="bg-indigo-600 h-2 rounded-full"
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
                         style={{ width: `${badge.progressPercent}%` }}
                       ></div>
                     </div>
@@ -217,4 +345,8 @@ const Badges = () => {
   );
 };
 
+<<<<<<< HEAD
 export default Badges;
+=======
+export default Badges;
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc

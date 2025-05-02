@@ -13,6 +13,10 @@
   },
   "dependencies": {
     "firebase": "^11.0.1",
+<<<<<<< HEAD
+=======
+    "framer-motion": "^12.7.4",
+>>>>>>> 4b03dc711399729500d3a74132a18a9870d287cc
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-just-parallax": "^3.1.16",
