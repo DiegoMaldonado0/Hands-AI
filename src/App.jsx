@@ -7,6 +7,8 @@ import Login from "./components/LogIn";
 import SignUp from "./components/SignUp";
 import Test from "./components/Test";
 import WordBuilder from "./components/WordBuilder";
+import Badges from "./components/Badges";
+import UserProfile from "./components/UserProfile";
 
 const App = () => {
   return (
@@ -16,8 +18,10 @@ const App = () => {
         <Route path="/Hands-AI" element={<Hero />} />
         <Route path="/Hands-AI/login" element={<Login />} />
         <Route path="/Hands-AI/signup" element={<SignUp />} />
-        <Route path="/Hands-AI/test" element={<Test />} />
+        <Route path="/Hands-AI/simon-dice" element={<Test />} />
         <Route path="/Hands-AI/word-builder" element={<WordBuilder />} />
+        <Route path="/Hands-AI/badges" element={<Badges />} />
+        <Route path="/Hands-AI/profile" element={<UserProfile />} />
       </Routes>
       <Footer />
     </div>

@@ -2,19 +2,48 @@
 import { useState } from "react";
 import { auth } from "../firebaseconfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Evita que la página se recargue al enviar el formulario
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Actualizar último inicio de sesión en Firestore
+      const db = getFirestore();
+      const userRef = doc(db, "users", user.uid);
+
+      // Verificar si el documento existe
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const today = new Date();
+        await updateDoc(userRef, {
+          "stats.lastLogin": today,
+        });
+      }
+
       alert("Login successful!");
+      navigate("/Hands-AI/profile");
     } catch (error) {
       console.error("Error logging in:", error);
       alert("Error logging in: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,8 +65,8 @@ const Login = () => {
             <input
               type="email"
               id="email"
-              value={email} // Asocia el estado 'email' al input
-              onChange={(e) => setEmail(e.target.value)} // Actualiza el estado 'email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full px-4 py-2 text-gray-900 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -53,8 +82,8 @@ const Login = () => {
             <input
               type="password"
               id="password"
-              value={password} // Asocia el estado 'password' al input
-              onChange={(e) => setPassword(e.target.value)} // Actualiza el estado 'password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full px-4 py-2 text-gray-900 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
@@ -63,9 +92,12 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              disabled={loading}
+              className={`w-full ${
+                loading ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+              } text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
             >
-              Log In
+              {loading ? "Iniciando sesión..." : "Log In"}
             </button>
           </div>
         </form>
