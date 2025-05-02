@@ -14,25 +14,29 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-      
+
       // Actualizar último inicio de sesión en Firestore
       const db = getFirestore();
       const userRef = doc(db, "users", user.uid);
-      
+
       // Verificar si el documento existe
       const userDoc = await getDoc(userRef);
-      
+
       if (userDoc.exists()) {
         const today = new Date();
         await updateDoc(userRef, {
-          "stats.lastLogin": today
+          "stats.lastLogin": today,
         });
       }
-      
+
       alert("Login successful!");
       navigate("/Hands-AI/profile");
     } catch (error) {
@@ -89,7 +93,9 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full ${loading ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+              className={`w-full ${
+                loading ? "bg-indigo-400" : "bg-indigo-600 hover:bg-indigo-700"
+              } text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500`}
             >
               {loading ? "Iniciando sesión..." : "Log In"}
             </button>

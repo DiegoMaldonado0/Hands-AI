@@ -9,27 +9,27 @@ import {
 export const navigation = [
   {
     id: "0",
-    title: "Learning",
+    title: "Aprende!",
     url: "/Hands-AI",
   },
   {
     id: "1",
-    title: "Simon Says!",
-    url: "/Hands-AI/test",
+    title: "Simon dice!",
+    url: "/Hands-AI/simon-dice",
   },
   {
     id: "2",
-    title: "Word Builder",
+    title: "Construye palabras",
     url: "/Hands-AI/word-builder",
   },
   {
     id: "3",
-    title: "Profile",
+    title: "Perfil",
     url: "/Hands-AI/profile",
   },
   {
     id: "4",
-    title: "Badges",
+    title: "Insignias",
     url: "/Hands-AI/badges",
   },
 ];

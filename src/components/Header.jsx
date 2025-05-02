@@ -121,21 +121,9 @@ const Header = () => {
                 ref={menuRef}
                 className="absolute right-0 mt-2 bg-n-8 border border-gray-300 rounded shadow-lg"
               >
-                <Link
-                  to="/Hands-AI/profile"
-                  className="block px-4 py-1 text-white hover:bg-gray-200 hover:text-gray-800 whitespace-nowrap"
-                >
-                  Mi Perfil
-                </Link>
-                <Link
-                  to="/Hands-AI/badges"
-                  className="block px-4 py-1 text-white hover:bg-gray-200 hover:text-gray-800 whitespace-nowrap"
-                >
-                  Mis Insignias
-                </Link>
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-1 text-red-500 hover:bg-gray-200 whitespace-nowrap"
+                  className="block px-4 py-1 text-red-500 hover:bg-gray-200 whitespace-nowrap"
                 >
                   Cerrar Sesión
                 </button>
