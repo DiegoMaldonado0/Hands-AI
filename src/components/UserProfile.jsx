@@ -41,11 +41,25 @@ const UserProfile = () => {
               lastLoginDate.getMonth() !== today.getMonth() || 
               lastLoginDate.getFullYear() !== today.getFullYear();
             
-            // Verificar si es el día siguiente para mantener la racha
-            let isNextDay = false; // Cambiado de const a let
+            // Si es un nuevo día, verificar si es el día siguiente en el calendario
+            let isNextDay = false;
             if (isNewDay) {
-              const timeDiff = today.getTime() - lastLoginDate.getTime();
+              // Crear fechas sin la hora para comparar solo las fechas
+              const lastDateOnly = new Date(
+                lastLoginDate.getFullYear(),
+                lastLoginDate.getMonth(),
+                lastLoginDate.getDate()
+              );
+              const todayDateOnly = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate()
+              );
+              
+              // Calcular diferencia en días entre fechas (sin hora)
+              const timeDiff = todayDateOnly.getTime() - lastDateOnly.getTime();
               const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+              
               if (dayDiff === 1) {
                 isNextDay = true;
               }
