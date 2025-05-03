@@ -47,7 +47,7 @@ const WordBuilder = () => {
 
     try {
       const response = await fetch(
-        "https://proyecto-manos.onrender.com/recognize-sign",
+        "https://proyecto-manos-1.onrender.com/recognize-sign",
         {
           method: "POST",
           body: formData,
