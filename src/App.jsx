@@ -15,13 +15,13 @@ const App = () => {
     <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
       <Header />
       <Routes>
-        <Route path="/" element={<Hero />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/simon-dice" element={<Test />} />
-        <Route path="/word-builder" element={<WordBuilder />} />
-        <Route path="/badges" element={<Badges />} />
-        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/Hands-AI" element={<Hero />} />
+        <Route path="/Hands-AI/login" element={<Login />} />
+        <Route path="/Hands-AI/signup" element={<SignUp />} />
+        <Route path="/Hands-AI/simon-dice" element={<Test />} />
+        <Route path="/Hands-AI/word-builder" element={<WordBuilder />} />
+        <Route path="/Hands-AI/badges" element={<Badges />} />
+        <Route path="/Hands-AI/profile" element={<UserProfile />} />
       </Routes>
       <Footer />
     </div>
