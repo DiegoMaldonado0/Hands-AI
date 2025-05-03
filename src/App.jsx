@@ -1,5 +1,5 @@
 // App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
@@ -12,21 +12,19 @@ import UserProfile from "./components/UserProfile";
 
 const App = () => {
   return (
-    <Router basename="/Hands-AI">
-      <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
-        <Header />
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/simon-dice" element={<Test />} />
-          <Route path="/word-builder" element={<WordBuilder />} />
-          <Route path="/badges" element={<Badges />} />
-          <Route path="/profile" element={<UserProfile />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <div className="pt-[4.75rem] lg:pt-[5.25rem] overflow-hidden">
+      <Header />
+      <Routes>
+        <Route path="/" element={<Hero />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/simon-dice" element={<Test />} />
+        <Route path="/word-builder" element={<WordBuilder />} />
+        <Route path="/badges" element={<Badges />} />
+        <Route path="/profile" element={<UserProfile />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 };
 
