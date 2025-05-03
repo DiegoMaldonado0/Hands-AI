@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { navigation } from "../constants";
 import Button from "./Button";
@@ -12,15 +13,30 @@ const Header = () => {
   const [openNavigation, setOpenNavigation] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogout, setShowLogout] = useState(false);
+  const [userStreak, setUserStreak] = useState(0);
   const menuRef = useRef(null); // Referencia para el menú desplegable
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const db = getFirestore();
+    
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        
+        // Obtener la racha del usuario desde Firestore
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUserStreak(userData.stats?.daysStreak || 0);
+          }
+        } catch (error) {
+          console.error("Error al obtener la racha del usuario:", error);
+        }
       } else {
         setUser(null);
+        setUserStreak(0);
       }
     });
 
@@ -109,17 +125,24 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
-        {/* Mostrar nombre de usuario y menú de cerrar sesión si está logueado */}
+        {/* Mostrar nombre de usuario, racha y menú de cerrar sesión si está logueado */}
         {user ? (
           <div className="relative ml-auto flex items-center">
-            <p className="text-white cursor-pointer" onClick={toggleLogoutMenu}>
-              {user.displayName || "User"}
-            </p>
+            <div className="flex flex-col items-end">
+              <p className="text-white cursor-pointer text-lg font-medium" onClick={toggleLogoutMenu}>
+                {user.displayName || "User"}
+              </p>
+              {/* Mostrar la racha con el ícono de llama */}
+              <div className="flex items-center text-sm text-orange-400">
+                <span>Racha: {userStreak}</span>
+                <span className="ml-1">🔥</span>
+              </div>
+            </div>
 
             {showLogout && (
               <div
                 ref={menuRef}
-                className="absolute right-0 mt-2 bg-n-8 border border-gray-300 rounded shadow-lg"
+                className="absolute right-0 top-full mt-2 bg-n-8 border border-gray-300 rounded shadow-lg"
               >
                 <button
                   onClick={handleLogout}
