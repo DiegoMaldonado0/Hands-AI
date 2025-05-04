@@ -99,9 +99,16 @@ const WordBuilder = () => {
         }
       );
       const data = await response.json();
-      setRecognizedLetter(data.recognized_text);
+      // Verificar si la respuesta contiene "No se detectaron manos"
+      if (data.recognized_text && !data.recognized_text.includes("No se detectaron manos")) {
+        setRecognizedLetter(data.recognized_text);
+      } else {
+        // Si no se detectaron manos, establecer recognizedLetter como vacío
+        setRecognizedLetter("");
+      }
     } catch (error) {
       console.error("Error al enviar el fotograma:", error);
+      setRecognizedLetter("");
     }
   };
 
@@ -272,7 +279,7 @@ const WordBuilder = () => {
           Constructor de Palabras
         </motion.h1>
         <p className="text-lg mb-8">
-          Construye palabras usando el lenguaje de señas. ¡Completa 10 palabras para ganar la insignia de Comunicador!
+          Construye palabras usando el lenguaje de señas.
         </p>
         
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
@@ -300,7 +307,11 @@ const WordBuilder = () => {
             <div className="p-6 bg-gray-800 rounded-lg shadow-lg w-full mb-4">
               <h2 className="text-xl font-bold mb-2">Letra reconocida:</h2>
               <div className="text-5xl font-bold mb-4 h-16 flex items-center justify-center">
-                {recognizedLetter || "-"}
+                {recognizedLetter ? (
+                  recognizedLetter
+                ) : (
+                  <span className="text-base text-gray-400">No se detectaron manos en la imagen</span>
+                )}
               </div>
               
               <button

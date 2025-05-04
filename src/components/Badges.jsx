@@ -32,6 +32,14 @@ const Badges = () => {
         requiredValue: 3,
       },
       {
+        id: "08",
+        name: "Dedicación",
+        description: "Has mantenido una racha de 7 días consecutivos",
+        icon: "🔥🔥",
+        requirement: "DAYS_STREAK",
+        requiredValue: 7,
+      },
+      {
         id: "03",
         name: "Maestro del Alfabeto",
         description: "Has completado todas las letras del abecedario",
@@ -54,6 +62,22 @@ const Badges = () => {
         icon: "⭐",
         requirement: "EXPERT",
         requiredValue: 1,
+      },
+      {
+        id: "06",
+        name: "Vocabulario Amplio",
+        description: "Aprendiste 20 palabras diferentes",
+        icon: "📚",
+        requirement: "WORDS_COMPLETED",
+        requiredValue: 20,
+      },
+      {
+        id: "07",
+        name: "Lingüista",
+        description: "Aprendiste 50 palabras diferentes",
+        icon: "🎓",
+        requirement: "WORDS_COMPLETED",
+        requiredValue: 50,
       },
     ];
 
