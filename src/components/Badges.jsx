@@ -47,6 +47,14 @@ const Badges = () => {
         requirement: "WORDS_COMPLETED",
         requiredValue: 10,
       },
+      {
+        id: "05",
+        name: "Experto",
+        description: "Completaste todos los niveles básicos",
+        icon: "⭐",
+        requirement: "EXPERT",
+        requiredValue: 1,
+      },
     ];
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
