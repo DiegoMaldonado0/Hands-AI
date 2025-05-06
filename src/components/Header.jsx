@@ -9,22 +9,20 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { HamburgerMenu } from "./design/Header";
 
 const Header = () => {
-  const pathname = useLocation();
+  const location = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogout, setShowLogout] = useState(false);
   const [userStreak, setUserStreak] = useState(0);
-  const menuRef = useRef(null); // Referencia para el menú desplegable
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const auth = getAuth();
     const db = getFirestore();
-    
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        
-        // Obtener la racha del usuario desde Firestore
         try {
           const userDoc = await getDoc(doc(db, "users", currentUser.uid));
           if (userDoc.exists()) {
@@ -44,13 +42,11 @@ const Header = () => {
   }, []);
 
   const toggleNavigation = () => {
-    if (openNavigation) {
-      setOpenNavigation(false);
-      enablePageScroll();
-    } else {
-      setOpenNavigation(true);
-      disablePageScroll();
-    }
+    setOpenNavigation((prev) => {
+      const newState = !prev;
+      newState ? disablePageScroll() : enablePageScroll();
+      return newState;
+    });
   };
 
   const handleClick = () => {
@@ -73,7 +69,6 @@ const Header = () => {
     setShowLogout((prev) => !prev);
   };
 
-  // Cerrar el menú al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -100,7 +95,7 @@ const Header = () => {
 
         <nav
           className={`${
-            openNavigation ? "flex " : "hidden"
+            openNavigation ? "flex" : "hidden"
           } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
         >
           <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
@@ -110,29 +105,51 @@ const Header = () => {
                 to={item.url}
                 onClick={handleClick}
                 className={`block relative font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 
-            ${item.onlyMobile ? "lg:hidden" : ""}
-            px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
-              item.url === location.pathname
-                ? "z-2 lg:text-n-1"
-                : "lg:text-n-1/50"
-            } lg:leading-5 lg:hover:text-n-1 xl:px-12`}
+                  ${item.onlyMobile ? "lg:hidden" : ""}
+                  px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
+                    item.url === location.pathname
+                      ? "z-2 lg:text-n-1"
+                      : "lg:text-n-1/50"
+                  } lg:leading-5 lg:hover:text-n-1 xl:px-12`}
               >
                 {item.title}
               </Link>
             ))}
+
+            {/* Enlaces de login y signup solo en móvil y si no hay usuario */}
+            {!user && (
+              <>
+                <Link
+                  to="/Hands-AI/signup"
+                  onClick={handleClick}
+                  className="block font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 lg:hidden px-6 py-6 md:py-8"
+                >
+                  New Account
+                </Link>
+                <Link
+                  to="/Hands-AI/login"
+                  onClick={handleClick}
+                  className="block font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 lg:hidden px-6 py-6 md:py-8"
+                >
+                  Sign in
+                </Link>
+              </>
+            )}
           </div>
 
           <HamburgerMenu />
         </nav>
 
-        {/* Mostrar nombre de usuario, racha y menú de cerrar sesión si está logueado */}
+        {/* Usuario logueado: nombre y racha */}
         {user ? (
           <div className="relative ml-auto flex items-center">
             <div className="flex flex-col items-end">
-              <p className="text-white cursor-pointer text-lg font-medium" onClick={toggleLogoutMenu}>
+              <p
+                className="text-white cursor-pointer text-lg font-medium"
+                onClick={toggleLogoutMenu}
+              >
                 {user.displayName || "User"}
               </p>
-              {/* Mostrar la racha con el ícono de llama */}
               <div className="flex items-center text-sm text-orange-400">
                 <span>Racha: {userStreak}</span>
                 <span className="ml-1">🔥</span>
