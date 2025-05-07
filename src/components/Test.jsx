@@ -149,7 +149,7 @@ const Hero = () => {
           <div className="w-full md:w-1/2">
             <video
               id="video"
-              className="w-full rounded-lg border border-gray-300 shadow-lg"
+              className="w-3/4 sm:w-full max-w-xs md:max-w-full rounded-lg border border-gray-300 shadow-lg mx-auto"
               autoPlay
               playsInline
               muted

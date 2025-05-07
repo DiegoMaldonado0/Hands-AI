@@ -152,7 +152,7 @@ const Hero = () => {
           <div className="w-full md:w-2/3 flex flex-col items-center mx-auto">
             <video
               id="video"
-              className="w-full h-full rounded-md border border-gray-300 shadow-lg"
+              className="w-3/4 sm:w-full max-w-xs md:max-w-full rounded-lg border border-gray-300 shadow-lg mx-auto"
               autoPlay
               playsInline
               muted
@@ -190,7 +190,7 @@ const Hero = () => {
             <img
               src={sampleImage}
               alt="Sample"
-              className="w-4/5 h-auto md:w-full rounded-md shadow-lg transition-transform hover:scale-105"
+              className="w-2/3 sm:w-full md:w-auto h-auto rounded-md shadow-lg transition-transform hover:scale-105"
             />
           </div>
         </div>
