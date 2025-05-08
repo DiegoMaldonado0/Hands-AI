@@ -12,6 +12,7 @@ const Badges = () => {
   useEffect(() => {
     const auth = getAuth();
     const db = getFirestore();
+    let isMounted = true; // Flag para controlar si el componente está montado
 
     // Definir las insignias disponibles en el sistema
     const systemBadges = [
@@ -82,6 +83,8 @@ const Badges = () => {
     ];
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!isMounted) return; // No hacer nada si el componente ya no está montado
+      
       if (currentUser) {
         setUser(currentUser);
 
@@ -89,6 +92,8 @@ const Badges = () => {
           // Obtener datos del usuario desde Firestore
           const userDoc = await getDoc(doc(db, "users", currentUser.uid));
 
+          if (!isMounted) return; // Verificar nuevamente después de la operación asíncrona
+          
           if (userDoc.exists()) {
             const userData = userDoc.data();
             console.log("Datos del usuario:", userData);
@@ -152,9 +157,9 @@ const Badges = () => {
                 } else {
                   // Usar la fecha existente
                   try {
-                    if (typeof userBadge.earnedAt === "object" && userBadge.earnedAt.toDate) {
+                    if (typeof userBadge.earnedAt === 'object' && userBadge.earnedAt.toDate) {
                       earnedDate = userBadge.earnedAt.toDate();
-                    } else if (typeof userBadge.earnedAt === "string") {
+                    } else if (typeof userBadge.earnedAt === 'string') {
                       earnedDate = new Date(userBadge.earnedAt);
                     } else if (userBadge.earnedAt instanceof Date) {
                       earnedDate = userBadge.earnedAt;
@@ -199,15 +204,25 @@ const Badges = () => {
             setBadges(combinedBadges);
           }
         } catch (error) {
-          console.error("Error al obtener datos de insignias:", error);
+          if (isMounted) {
+            console.error("Error al obtener datos de insignias:", error);
+          }
         }
       } else {
-        navigate("/login");
+        if (isMounted) {
+          navigate("/login");
+        }
       }
-      setLoading(false);
+      
+      if (isMounted) {
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false; // Marcar que el componente ya no está montado
+      unsubscribe(); // Desvincular el listener
+    };
   }, [navigate]);
 
   // Función para actualizar una insignia en Firestore

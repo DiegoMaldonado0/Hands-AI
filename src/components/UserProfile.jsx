@@ -31,7 +31,22 @@ const UserProfile = () => {
             const userData = userDoc.data();
             
             // Actualizar el último login y verificar racha
-            const lastLogin = userData.stats?.lastLogin?.toDate() || new Date();
+            let lastLogin = new Date();
+            
+            // Verificar si lastLogin existe y convertirlo correctamente
+            if (userData.stats?.lastLogin) {
+              if (typeof userData.stats.lastLogin === 'object' && userData.stats.lastLogin.toDate) {
+                // Es un timestamp de Firestore
+                lastLogin = userData.stats.lastLogin.toDate();
+              } else if (userData.stats.lastLogin instanceof Date) {
+                // Ya es un objeto Date
+                lastLogin = userData.stats.lastLogin;
+              } else if (typeof userData.stats.lastLogin === 'string') {
+                // Es una cadena ISO
+                lastLogin = new Date(userData.stats.lastLogin);
+              }
+            }
+            
             const today = new Date();
             const lastLoginDate = new Date(lastLogin);
             
@@ -196,14 +211,14 @@ const UserProfile = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-indigo-400 font-medium">
-                      {Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%
+                      {stats.lessonsCompleted > 0 ? Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100) + "%" : "0%"}
                     </p>
                   </div>
                 </div>
                 <div className="mt-2 w-full bg-gray-600 rounded-full h-2.5">
                   <div 
                     className="bg-indigo-500 h-2.5 rounded-full" 
-                    style={{ width: `${Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%` }}
+                    style={{ width: `${stats.lessonsCompleted > 0 ? Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100) : 0}%` }}
                   ></div>
                 </div>
               </div>
