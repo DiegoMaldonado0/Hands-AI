@@ -9,6 +9,7 @@ import Test from "./components/Test";
 import WordBuilder from "./components/WordBuilder";
 import Badges from "./components/Badges";
 import UserProfile from "./components/UserProfile";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/word-builder" element={<WordBuilder />} />
         <Route path="/badges" element={<Badges />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="*" element={<NotFound />} /> {/* ruta 404 */}
       </Routes>
       <Footer />
     </div>
