@@ -38,7 +38,7 @@ const Login = () => {
       }
 
       alert("Login successful!");
-      navigate("/Hands-AI/profile");
+      navigate("/profile");
     } catch (error) {
       console.error("Error logging in:", error);
       alert("Error logging in: " + error.message);
