@@ -1,21 +1,19 @@
-import { curve, heroBackground, sampleImage } from "../assets";
-import Section from "./Section";
-import { BackgroundCircles } from "./design/Hero";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
+import Section from "./Section";
+import { BackgroundCircles } from "./design/Hero";
 
 const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const Hero = () => {
   const parallaxRef = useRef(null);
   const [isRecognizing, setIsRecognizing] = useState(false);
-  const [recognizedText, setRecognizedText] = useState(
-    "Reconocimiento detenido."
-  );
+  const [recognizedText, setRecognizedText] = useState("Reconocimiento detenido.");
   const [isGameOn, setIsGameOn] = useState(false);
   const [targetLetter, setTargetLetter] = useState("");
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [gameMessage, setGameMessage] = useState("");
   const targetLetterRef = useRef(targetLetter);
   const timerRef = useRef(null);
@@ -25,9 +23,7 @@ const Hero = () => {
 
     async function startCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
       } catch (error) {
         console.error("Error al acceder a la cámara:", error);
@@ -42,26 +38,26 @@ const Hero = () => {
       canvas.height = video.videoHeight;
       const context = canvas.getContext("2d");
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise((resolve) =>
-        canvas.toBlob(resolve, "image/jpeg")
-      );
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg"));
 
       const formData = new FormData();
       formData.append("file", blob, "frame.jpg");
 
       try {
-        const response = await fetch(
-          "https://proyecto-manos.onrender.com/recognize-sign",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+        const response = await fetch("https://proyecto-manos-1.onrender.com/recognize-sign", {
+          method: "POST",
+          body: formData,
+        });
         const data = await response.json();
-        setRecognizedText(`Recognized letter: ${data.recognized_text}`);
+        setRecognizedText(`Letra reconocida: ${data.recognized_text}`);
 
         if (data.recognized_text === targetLetterRef.current) {
           setScore((prevScore) => prevScore + 1);
+          confetti({
+            particleCount: 50,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
           resetTimer();
           generateRandomLetter();
         }
@@ -93,9 +89,9 @@ const Hero = () => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
           setIsGameOn(false);
-          setGameMessage("You've lost!");
+          setGameMessage("¡Perdiste!");
           generateRandomLetter();
-          return 5;
+          return 10;
         }
         return prevTime - 1;
       });
@@ -109,7 +105,7 @@ const Hero = () => {
   };
 
   const resetTimer = () => {
-    setTimeLeft(5);
+    setTimeLeft(10);
     stopTimer();
     startTimer();
   };
@@ -143,7 +139,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Simon Dice!
+          Simón Dice!
         </motion.h1>
         <p className="text-lg mb-8">
           Pon a prueba tus habilidades y copia las letras en lenguaje de señas.
@@ -153,7 +149,7 @@ const Hero = () => {
           <div className="w-full md:w-1/2">
             <video
               id="video"
-              className="w-full rounded-lg border border-gray-300 shadow-lg"
+              className="w-3/4 sm:w-full max-w-xs md:max-w-full rounded-lg border border-gray-300 shadow-lg mx-auto"
               autoPlay
               playsInline
               muted
@@ -162,30 +158,54 @@ const Hero = () => {
               onClick={() => setIsRecognizing(!isRecognizing)}
               className="mt-4 px-6 py-3 text-black bg-white hover:bg-[#100c14] hover:text-white font-bold rounded-lg shadow-md transition"
             >
-              {isRecognizing
-                ? "Detener reconocimiento"
-                : "Iniciar reconocimiento"}
+              {isRecognizing ? "Detener reconocimiento" : "Iniciar reconocimiento"}
             </button>
             <p className="mt-2 text-sm">{recognizedText}</p>
           </div>
           <div className="w-full md:w-1/2 text-center">
             <div className="p-6 bg-white text-black rounded-lg shadow-md mb-4">
               <motion.p
-                className="text-4xl font-bold"
+                className="text-4xl font-bold text-black drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
                 key={targetLetter}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                Simon Dice: {targetLetter}
+                Simón dice: {targetLetter}
               </motion.p>
             </div>
-            <div className="p-4 bg-red-500 text-white rounded-lg shadow-md mb-4">
-              <p className="text-xl font-bold">Tiempo Restante: {timeLeft}s</p>
+
+            {/* Circular progress */}
+            <div className="flex items-center justify-center mb-4">
+              <div className="relative w-24 h-24">
+                <svg className="absolute top-0 left-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    className="text-gray-300"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"
+                  />
+                  <path
+                    className="text-red-500 transition-all duration-1000"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray="100"
+                    strokeDashoffset={(100 - (timeLeft / 5) * 100).toFixed(2)}
+                    d="M18 2a16 16 0 1 1 0 32 16 16 0 1 1 0-32"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center text-xl font-bold text-red-600">
+                  {timeLeft}s
+                </div>
+              </div>
             </div>
-            <div className="p-4 bg-green-500 text-white rounded-lg shadow-md">
+
+            <div className="p-4 bg-[#6366f1] text-white rounded-lg shadow-md">
               <p className="text-xl font-bold">Puntuación: {score}</p>
             </div>
+
             {gameMessage && (
               <motion.p
                 className="mt-4 text-red-600 font-bold"
@@ -195,9 +215,10 @@ const Hero = () => {
                 {gameMessage}
               </motion.p>
             )}
+
             <button
               onClick={toggleGame}
-              className="mt-6 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition"
+              className="mt-6 px-6 py-3 bg-[#6366f1] hover:bg-[#4f46e5] text-white font-bold rounded-lg shadow-md transition"
             >
               {isGameOn ? "Detener el juego" : "Empieza a jugar!"}
             </button>

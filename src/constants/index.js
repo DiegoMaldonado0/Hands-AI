@@ -10,27 +10,27 @@ export const navigation = [
   {
     id: "0",
     title: "Aprende!",
-    url: "/Hands-AI",
+    url: "/",
   },
   {
     id: "1",
     title: "Simon dice!",
-    url: "/Hands-AI/simon-dice",
+    url: "/simon-dice",
   },
   {
     id: "2",
     title: "Construye palabras",
-    url: "/Hands-AI/word-builder",
+    url: "/word-builder",
   },
   {
     id: "3",
     title: "Perfil",
-    url: "/Hands-AI/profile",
+    url: "/profile",
   },
   {
     id: "4",
     title: "Insignias",
-    url: "/Hands-AI/badges",
+    url: "/badges",
   },
 ];
 

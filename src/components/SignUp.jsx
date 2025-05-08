@@ -76,7 +76,7 @@ const SignUp = () => {
 
       // Redirigir al usuario después de un registro exitoso
       setTimeout(() => {
-        navigate("/Hands-AI/profile");
+        navigate("/profile");
       }, 1500);
     } catch (error) {
       console.error("Error en el registro:", error);

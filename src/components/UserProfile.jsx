@@ -31,7 +31,22 @@ const UserProfile = () => {
             const userData = userDoc.data();
             
             // Actualizar el último login y verificar racha
-            const lastLogin = userData.stats?.lastLogin?.toDate() || new Date();
+            let lastLogin = new Date();
+            
+            // Verificar si lastLogin existe y convertirlo correctamente
+            if (userData.stats?.lastLogin) {
+              if (typeof userData.stats.lastLogin === 'object' && userData.stats.lastLogin.toDate) {
+                // Es un timestamp de Firestore
+                lastLogin = userData.stats.lastLogin.toDate();
+              } else if (userData.stats.lastLogin instanceof Date) {
+                // Ya es un objeto Date
+                lastLogin = userData.stats.lastLogin;
+              } else if (typeof userData.stats.lastLogin === 'string') {
+                // Es una cadena ISO
+                lastLogin = new Date(userData.stats.lastLogin);
+              }
+            }
+            
             const today = new Date();
             const lastLoginDate = new Date(lastLogin);
             
@@ -41,11 +56,25 @@ const UserProfile = () => {
               lastLoginDate.getMonth() !== today.getMonth() || 
               lastLoginDate.getFullYear() !== today.getFullYear();
             
-            // Verificar si es el día siguiente para mantener la racha
-            let isNextDay = false; // Cambiado de const a let
+            // Si es un nuevo día, verificar si es el día siguiente en el calendario
+            let isNextDay = false;
             if (isNewDay) {
-              const timeDiff = today.getTime() - lastLoginDate.getTime();
+              // Crear fechas sin la hora para comparar solo las fechas
+              const lastDateOnly = new Date(
+                lastLoginDate.getFullYear(),
+                lastLoginDate.getMonth(),
+                lastLoginDate.getDate()
+              );
+              const todayDateOnly = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate()
+              );
+              
+              // Calcular diferencia en días entre fechas (sin hora)
+              const timeDiff = todayDateOnly.getTime() - lastDateOnly.getTime();
               const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+              
               if (dayDiff === 1) {
                 isNextDay = true;
               }
@@ -90,7 +119,7 @@ const UserProfile = () => {
           console.error("Error al obtener datos del usuario:", error);
         }
       } else {
-        navigate("/Hands-AI/login");
+        navigate("/login");
       }
       setLoading(false);
     });
@@ -182,14 +211,14 @@ const UserProfile = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-indigo-400 font-medium">
-                      {Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%
+                      {stats.lessonsCompleted > 0 ? Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100) + "%" : "0%"}
                     </p>
                   </div>
                 </div>
                 <div className="mt-2 w-full bg-gray-600 rounded-full h-2.5">
                   <div 
                     className="bg-indigo-500 h-2.5 rounded-full" 
-                    style={{ width: `${Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100)}%` }}
+                    style={{ width: `${stats.lessonsCompleted > 0 ? Math.min(Math.round((stats.lessonsCompleted / 20) * 100), 100) : 0}%` }}
                   ></div>
                 </div>
               </div>

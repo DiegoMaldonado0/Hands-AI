@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const Badges = () => {
@@ -12,6 +12,7 @@ const Badges = () => {
   useEffect(() => {
     const auth = getAuth();
     const db = getFirestore();
+    let isMounted = true; // Flag para controlar si el componente está montado
 
     // Definir las insignias disponibles en el sistema
     const systemBadges = [
@@ -32,6 +33,14 @@ const Badges = () => {
         requiredValue: 3,
       },
       {
+        id: "08",
+        name: "Dedicación",
+        description: "Has mantenido una racha de 7 días consecutivos",
+        icon: "🔥🔥",
+        requirement: "DAYS_STREAK",
+        requiredValue: 7,
+      },
+      {
         id: "03",
         name: "Maestro del Alfabeto",
         description: "Has completado todas las letras del abecedario",
@@ -50,14 +59,32 @@ const Badges = () => {
       {
         id: "05",
         name: "Experto",
-        description: "Completaste todos los niveles básicos",
+        description: "Completaste todas las insignias disponibles",
         icon: "⭐",
         requirement: "EXPERT",
         requiredValue: 1,
       },
+      {
+        id: "06",
+        name: "Vocabulario Amplio",
+        description: "Aprendiste 20 palabras diferentes",
+        icon: "📚",
+        requirement: "WORDS_COMPLETED",
+        requiredValue: 20,
+      },
+      {
+        id: "07",
+        name: "Lingüista",
+        description: "Aprendiste 50 palabras diferentes",
+        icon: "🎓",
+        requirement: "WORDS_COMPLETED",
+        requiredValue: 50,
+      },
     ];
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (!isMounted) return; // No hacer nada si el componente ya no está montado
+      
       if (currentUser) {
         setUser(currentUser);
 
@@ -65,6 +92,8 @@ const Badges = () => {
           // Obtener datos del usuario desde Firestore
           const userDoc = await getDoc(doc(db, "users", currentUser.uid));
 
+          if (!isMounted) return; // Verificar nuevamente después de la operación asíncrona
+          
           if (userDoc.exists()) {
             const userData = userDoc.data();
             console.log("Datos del usuario:", userData);
@@ -87,62 +116,84 @@ const Badges = () => {
               let earnedDate = null;
               let isEarned = false;
 
-              // Verificar si la insignia está ganada
-              if (userBadge && userBadge.earnedAt) {
+              // Calcular progreso según el tipo de insignia
+              switch (badge.requirement) {
+                case "DAYS_STREAK":
+                  progress = userData.stats?.daysStreak || 0;
+                  break;
+                case "ALPHABET_MASTERY":
+                  progress = userData.stats?.lettersLearned?.length || 0;
+                  break;
+                case "WORDS_COMPLETED":
+                  progress = userData.stats?.wordsCompleted || 0;
+                  break;
+                case "REGISTRATION":
+                  // Si el usuario está registrado, el progreso es 1
+                  progress = 1;
+                  break;
+                case "EXPERT":
+                  // Verificar si todas las demás insignias están obtenidas
+                  const otherBadges = systemBadges.filter(b => b.id !== "05");
+                  const earnedBadgesCount = userBadges.filter(
+                    ub => ub.earnedAt && otherBadges.some(ob => ob.id === ub.badgeId)
+                  ).length;
+                  progress = earnedBadgesCount;
+                  // El valor requerido debe ser igual al número de otras insignias
+                  badge.requiredValue = otherBadges.length;
+                  break;
+              }
+
+              // Verificar si la insignia está ganada basado en el progreso actual
+              if (progress >= badge.requiredValue) {
+                isEarned = true;
+                
+                // Si la insignia está ganada pero no está registrada en userBadges, actualizarla
+                if (!userBadge || !userBadge.earnedAt) {
+                  const today = new Date();
+                  earnedDate = today;
+                  
+                  // Actualizar en Firestore (asíncrono)
+                  updateUserBadge(db, currentUser.uid, badge.id, today);
+                } else {
+                  // Usar la fecha existente
+                  try {
+                    if (typeof userBadge.earnedAt === 'object' && userBadge.earnedAt.toDate) {
+                      earnedDate = userBadge.earnedAt.toDate();
+                    } else if (typeof userBadge.earnedAt === 'string') {
+                      earnedDate = new Date(userBadge.earnedAt);
+                    } else if (userBadge.earnedAt instanceof Date) {
+                      earnedDate = userBadge.earnedAt;
+                    }
+                  } catch (error) {
+                    console.error(`Error al procesar fecha de insignia ${badge.id}:`, error);
+                    earnedDate = new Date(); // Fecha por defecto
+                  }
+                }
+              } else if (userBadge && userBadge.earnedAt) {
+                // Si hay una insignia registrada pero ya no cumple los requisitos
+                // (caso raro, pero posible si los requisitos cambian)
                 try {
-                  // Intentar convertir la fecha a un objeto Date
-                  if (
-                    typeof userBadge.earnedAt === "object" &&
-                    userBadge.earnedAt.toDate
-                  ) {
-                    // Es un timestamp de Firestore
+                  if (typeof userBadge.earnedAt === "object" && userBadge.earnedAt.toDate) {
                     earnedDate = userBadge.earnedAt.toDate();
                   } else if (typeof userBadge.earnedAt === "string") {
-                    // Es una cadena ISO
                     earnedDate = new Date(userBadge.earnedAt);
                   } else if (userBadge.earnedAt instanceof Date) {
-                    // Ya es un objeto Date
                     earnedDate = userBadge.earnedAt;
                   }
-
+                  
                   // Verificar si la fecha es válida
                   isEarned = earnedDate && !isNaN(earnedDate.getTime());
                 } catch (error) {
-                  console.error(
-                    `Error al procesar fecha de insignia ${badge.id}:`,
-                    error
-                  );
+                  console.error(`Error al procesar fecha de insignia ${badge.id}:`, error);
                   isEarned = false;
                 }
-              }
-
-              // Calcular progreso según el tipo de insignia si no está ganada
-              if (!isEarned) {
-                switch (badge.requirement) {
-                  case "DAYS_STREAK":
-                    progress = userData.stats?.daysStreak || 0;
-                    break;
-                  case "ALPHABET_MASTERY":
-                    progress = userData.stats?.lettersLearned?.length || 0;
-                    break;
-                  case "WORDS_COMPLETED":
-                    progress = userData.stats?.wordsCompleted || 0;
-                    break;
-                  case "REGISTRATION":
-                    // Si el usuario está registrado, el progreso es 1
-                    progress = 1;
-                    break;
-                }
-              } else {
-                // Si está ganada, el progreso es el valor requerido
-                progress = badge.requiredValue;
               }
 
               return {
                 ...badge,
                 earned: isEarned,
                 date: earnedDate,
-                progress: userBadge?.progress || progress,
+                progress: progress,
                 progressPercent: Math.min(
                   Math.round((progress / badge.requiredValue) * 100),
                   100
@@ -153,16 +204,67 @@ const Badges = () => {
             setBadges(combinedBadges);
           }
         } catch (error) {
-          console.error("Error al obtener datos de insignias:", error);
+          if (isMounted) {
+            console.error("Error al obtener datos de insignias:", error);
+          }
         }
       } else {
-        navigate("/Hands-AI/login");
+        if (isMounted) {
+          navigate("/login");
+        }
       }
-      setLoading(false);
+      
+      if (isMounted) {
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false; // Marcar que el componente ya no está montado
+      unsubscribe(); // Desvincular el listener
+    };
   }, [navigate]);
+
+  // Función para actualizar una insignia en Firestore
+  const updateUserBadge = async (db, userId, badgeId, earnedDate) => {
+    try {
+      const userRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const userBadges = Array.isArray(userData.userBadges) ? userData.userBadges : [];
+        
+        // Buscar si la insignia ya existe
+        const badgeIndex = userBadges.findIndex(badge => badge.badgeId === badgeId);
+        
+        if (badgeIndex >= 0) {
+          // Actualizar la insignia existente
+          userBadges[badgeIndex] = {
+            ...userBadges[badgeIndex],
+            earnedAt: earnedDate,
+            progress: 1
+          };
+        } else {
+          // Agregar nueva insignia
+          userBadges.push({
+            badgeId: badgeId,
+            earnedAt: earnedDate,
+            progress: 1
+          });
+        }
+        
+        // Actualizar en Firestore
+        await updateDoc(userRef, {
+          userBadges: userBadges
+        });
+        
+        console.log(`Insignia ${badgeId} actualizada correctamente`);
+      }
+    } catch (error) {
+      console.error(`Error al actualizar insignia ${badgeId}:`, error);
+    }
+  };
 
   if (loading) {
     return (

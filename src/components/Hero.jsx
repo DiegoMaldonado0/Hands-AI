@@ -2,6 +2,8 @@ import { curve, heroBackground, sampleImage } from "../assets";
 import Section from "./Section";
 import { BackgroundCircles, BottomLine, Gradient } from "./design/Hero";
 import { useRef, useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 
 const Hero = () => {
   const parallaxRef = useRef(null);
@@ -9,6 +11,22 @@ const Hero = () => {
   const [recognizedText, setRecognizedText] = useState(
     "Reconocimiento detenido."
   );
+  const [user, setUser] = useState(null);
+  const lastRecognizedLetterRef = useRef("");
+
+  // Efecto para autenticación de usuario
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const video = document.getElementById("video");
@@ -41,14 +59,25 @@ const Hero = () => {
 
       try {
         const response = await fetch(
-          "https://proyecto-manos.onrender.com/recognize-sign",
+          "https://proyecto-manos-1.onrender.com/recognize-sign",
           {
             method: "POST",
             body: formData,
           }
         );
         const data = await response.json();
-        setRecognizedText(`Letra reconocida: ${data.recognized_text}`);
+        const recognizedLetter = data.recognized_text;
+        setRecognizedText(`Letra reconocida: ${recognizedLetter}`);
+        
+        // Verificar si es una letra válida y si el usuario está autenticado
+        if (recognizedLetter && recognizedLetter.length === 1 && user) {
+          // Verificar si la letra es diferente a la última reconocida
+          if (recognizedLetter !== lastRecognizedLetterRef.current) {
+            lastRecognizedLetterRef.current = recognizedLetter;
+            // Registrar la nueva letra aprendida
+            await registerLearnedLetter(recognizedLetter);
+          }
+        }
       } catch (error) {
         console.error("Error al enviar el fotograma:", error);
       }
@@ -61,7 +90,25 @@ const Hero = () => {
     }
 
     startCamera();
-  }, [isRecognizing]);
+  }, [isRecognizing, user, lastRecognizedLetterRef]);
+
+  // Función para registrar una letra aprendida en Firebase
+  async function registerLearnedLetter(letter) {
+    if (!user) return;
+    
+    try {
+      const db = getFirestore();
+      const userRef = doc(db, "users", user.uid);
+      
+      // Actualizar el array de letras aprendidas
+      await updateDoc(userRef, {
+        "stats.lettersLearned": arrayUnion(letter)
+      });
+      
+    } catch (error) {
+      console.error("Error al registrar letra aprendida:", error);
+    }
+  }
 
   function toggleRecognition() {
     setIsRecognizing((prev) => !prev);
@@ -105,7 +152,7 @@ const Hero = () => {
           <div className="w-full md:w-2/3 flex flex-col items-center mx-auto">
             <video
               id="video"
-              className="w-full h-full rounded-md border border-gray-300 shadow-lg"
+              className="w-3/4 sm:w-full max-w-xs md:max-w-full rounded-lg border border-gray-300 shadow-lg mx-auto"
               autoPlay
               playsInline
               muted
@@ -143,7 +190,7 @@ const Hero = () => {
             <img
               src={sampleImage}
               alt="Sample"
-              className="w-4/5 h-auto md:w-full rounded-md shadow-lg transition-transform hover:scale-105"
+              className="w-2/3 sm:w-full md:w-auto h-auto rounded-md shadow-lg transition-transform hover:scale-105"
             />
           </div>
         </div>
