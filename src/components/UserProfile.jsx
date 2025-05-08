@@ -104,7 +104,7 @@ const UserProfile = () => {
           console.error("Error al obtener datos del usuario:", error);
         }
       } else {
-        navigate("/Hands-AI/login");
+        navigate("/login");
       }
       setLoading(false);
     });
