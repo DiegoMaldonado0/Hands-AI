@@ -202,7 +202,7 @@ const Badges = () => {
           console.error("Error al obtener datos de insignias:", error);
         }
       } else {
-        navigate("/Hands-AI/login");
+        navigate("/login");
       }
       setLoading(false);
     });
