@@ -293,14 +293,16 @@ const Badges = () => {
             {badges.map((badge) => (
               <div
                 key={badge.id}
-                className={`p-6 rounded-lg border ${
+                className={`p-6 rounded-lg border transform transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-indigo-500/20 cursor-pointer ${
                   badge.earned
-                    ? "bg-gray-700 border-indigo-500"
-                    : "bg-gray-800 border-gray-700 opacity-60"
+                    ? "bg-gray-700 border-indigo-500 hover:border-indigo-400"
+                    : "bg-gray-800 border-gray-700 opacity-60 hover:opacity-80"
                 }`}
               >
                 <div className="flex items-center mb-4">
-                  <div className="text-4xl mr-4">{badge.icon}</div>
+                  <div className="text-4xl mr-4 transition-transform duration-300 hover:scale-110 hover:rotate-12">
+                    {badge.icon}
+                  </div>
                   <div>
                     <h3 className="text-xl font-semibold text-white">
                       {badge.name}
@@ -310,7 +312,7 @@ const Badges = () => {
                 </div>
 
                 {badge.earned && badge.date ? (
-                  <div className="mt-4 text-sm text-indigo-400">
+                  <div className="mt-4 text-sm text-indigo-400 transition-all duration-300 hover:text-indigo-300">
                     Obtenida el {badge.date.toLocaleDateString()}
                   </div>
                 ) : (
@@ -321,9 +323,9 @@ const Badges = () => {
                         {badge.progress}/{badge.requiredValue}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-indigo-600 h-2 rounded-full"
+                        className="bg-indigo-600 h-2 rounded-full transition-all duration-500 ease-out"
                         style={{ width: `${badge.progressPercent}%` }}
                       ></div>
                     </div>
