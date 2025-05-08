@@ -58,7 +58,7 @@ const Badges = () => {
       {
         id: "05",
         name: "Experto",
-        description: "Completaste todos los niveles básicos",
+        description: "Completaste todas las insignias disponibles",
         icon: "⭐",
         requirement: "EXPERT",
         requiredValue: 1,
@@ -125,6 +125,16 @@ const Badges = () => {
                 case "REGISTRATION":
                   // Si el usuario está registrado, el progreso es 1
                   progress = 1;
+                  break;
+                case "EXPERT":
+                  // Verificar si todas las demás insignias están obtenidas
+                  const otherBadges = systemBadges.filter(b => b.id !== "05");
+                  const earnedBadgesCount = userBadges.filter(
+                    ub => ub.earnedAt && otherBadges.some(ob => ob.id === ub.badgeId)
+                  ).length;
+                  progress = earnedBadgesCount;
+                  // El valor requerido debe ser igual al número de otras insignias
+                  badge.requiredValue = otherBadges.length;
                   break;
               }
 
